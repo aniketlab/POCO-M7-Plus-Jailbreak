@@ -98,7 +98,7 @@ A custom UEFI application placed in `efisp` can set `is_unlocked` and `is_unlock
 - Original USB cable
 - Device on HyperOS **2.0.208.0 or earlier** (do NOT update)
 - USB Debugging enabled in Developer Options
-- **[KernelSU Manager](https://github.com/tiann/KernelSU)** APK or **[Resuski Manager](https://github.com/rsuntk/KernelSU)** APK installed on phone
+- **[KernelSU Manager](https://github.com/tiann/KernelSU)** APK or **[ReSukiSU Manager](https://github.com/ReSukiSU/ReSukiSU/releases)** APK installed on phone
 
 > **Do I need OEM Unlocking enabled in Developer Options?**
 > **No - and this is one of the most important aspects of this exploit.**
@@ -383,7 +383,7 @@ python check.py abl.img
 - [Qualcomm June 2026 Security Bulletin](https://www.qualcomm.com/company/product-security/bulletins)
 - [XDA Guide - POCO F8 Pro / Redmi K90 (Annibale)](https://xdaforums.com/t/guide-exploit-poco-f8-pro-redmi-k90-annibale-unlock-immediate-bootloader-unlock-no-mi-account.4788141/)
 - [KernelSU Project](https://kernelsu.org/)
-- [Resuski Manager by rsuntk](https://github.com/rsuntk/KernelSU)
+- [ReSukiSU Manager](https://github.com/ReSukiSU/ReSukiSU/releases)
 
 ### Credits
 
@@ -395,7 +395,7 @@ python check.py abl.img
 | YuKongA | [@YuKongA](https://github.com/YuKongA) | GhostLock One-Tap App (CVE-2026-43499) |
 | XDA community | [XDA Forums](https://xdaforums.com) | Cross-device testing and documentation |
 | KernelSU developers | [@tiann](https://github.com/tiann) | Root management framework |
-| rsuntk | [@rsuntk](https://github.com/rsuntk) | Resuski Manager - alternative root manager with module support |
+| ReSukiSU | [@ReSukiSU](https://github.com/ReSukiSU) | ReSukiSU Manager - alternative root manager with module support |
 | GhostLock authors | - | Kernel exploit research (6.6-6.12 range) |
 | aniketlab | [@aniketlab](https://github.com/aniketlab) | Testing on SM6375 / kernel 6.1.118 + 6.1.138, firmware comparison, GhostLock panic analysis, dual-approach documentation |
 
