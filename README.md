@@ -4,6 +4,23 @@
 
 ---
 
+## :arrow_down: Quick Download
+
+| File | Description |
+|---|---|
+| **[GBL-AutoRoot.bat](https://github.com/aniketlab/POCO-M7-Plus-Jailbreak/releases/latest/download/GBL-AutoRoot.bat)** | One-click exploit automation tool (Windows) |
+
+**How to use:**
+1. Download `GBL-AutoRoot.bat` from the link above
+2. Double-click to run â€” no installation needed
+3. Connect your phone via USB when prompted
+4. Script handles everything: ADB download, device detection, exploit, result
+
+> Compatible with any Qualcomm ABL device affected by CVE-2026-24088.
+> If your device returns `OKAY`, root access is granted automatically.
+
+---
+
 ## Table of Contents
 
 1. [Device & Environment](#1-device--environment)
