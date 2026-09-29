@@ -1,0 +1,10 @@
+﻿# Auto-downloaded by GBL-AutoRoot.bat - not needed in repo
+platform-tools/
+
+# Loose image files (images/ folder is tracked, not root-level copies)
+*.jpg
+*.png
+
+# Temp files
+*.zip
+*.tmp
