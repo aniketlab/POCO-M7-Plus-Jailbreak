@@ -4,7 +4,7 @@
 
 ---
 
-## :arrow_down: Quick Download — v2.0
+## :arrow_down: Quick Download — v2.1
 
 | File | Description |
 |---|---|
@@ -421,3 +421,4 @@ python check.py abl.img
 *Tested on: Poco M7 Plus 5G - HyperOS 2.0.202.0 & 2.0.208.0 - Kernel 6.1.118 & 6.1.138 - September 2026*
 
 *Research by [@aniketlab](https://github.com/aniketlab) - conducted on personal device for educational purposes only.*
+

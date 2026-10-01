@@ -1,8 +1,8 @@
 @echo off
 chcp 437 >nul 2>&1
-title GBL Exploit v2.0 - CVE-2026-24088 ^| github.com/aniketlab
+title GBL Exploit v2.1 - CVE-2026-24088 ^| github.com/aniketlab
 color 07
-mode con: cols=70 lines=50
+mode con: cols=75 lines=50
 
 :: ── Permanent paths ─────────────────────────────────────────────────────
 set "SCRIPT_DIR=%~dp0"
@@ -12,8 +12,9 @@ set "ADB_EXE=%TOOLS_DIR%\adb.exe"
 set "FB_EXE=%TOOLS_DIR%\fastboot.exe"
 set "TOOLS_URL=https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
 set "TOOLS_ZIP=%TEMP%\platform-tools.zip"
+set "DRIVER_URL=https://dl.google.com/android/repository/usb_driver_r13-windows.zip"
 set "TMPOUT=%TEMP%\gbl_out.txt"
-set "VERSION=2.0"
+set "VERSION=2.1"
 
 :: ── Log file setup ───────────────────────────────────────────────────────
 for /f "tokens=1-3 delims=/ " %%a in ("%DATE%") do set "LOGDATE=%%c%%a%%b"
@@ -65,8 +66,7 @@ echo.
 
 
 :: ============================================
-:: STEP 3 - SMART DEVICE DETECTION
-:: (Detects BOTH ADB and Fastboot mode)
+:: STEP 3 - SMART DEVICE DETECTION & DRIVERS
 :: ============================================
 call :print_step "[3/6]" "Scanning for connected devices (ADB + Fastboot)..."
 echo.
@@ -561,24 +561,28 @@ exit /b 0
 
 
 :: ============================================
-:: SUB: SMART DETECT - ADB or FASTBOOT
+:: SUB: SMART DETECT - ADB or FASTBOOT & DRIVERS
 :: ============================================
 :detect_any_device
 set "DEVICE_FOUND=0"
 set "DEVICE_SERIAL="
 set "FB_SERIAL="
 
-:: Quick check ADB
+:: 1. Quick check ADB
 for /f "skip=1 tokens=1,2" %%a in ('"%ADB%" devices 2^>nul') do (
     if "%%b"=="device" (
         set "DEVICE_FOUND=1"
         set "DEVICE_SERIAL=%%a"
         set "MODE=ADB"
     )
+    if "%%b"=="unauthorized" (
+        call :print_yellow "   [!] Device is UNAUTHORIZED. Check your phone screen and tap 'Allow'."
+        call :log_write "[DETECT] Device unauthorized."
+    )
 )
 if "!DEVICE_FOUND!"=="1" goto :device_collect_info
 
-:: Quick check Fastboot
+:: 2. Quick check Fastboot
 "%FASTBOOT%" devices 2>nul | findstr /r "[a-zA-Z0-9]" >nul 2>&1
 if !errorlevel! equ 0 (
     for /f "tokens=1" %%i in ('"%FASTBOOT%" devices 2^>nul') do set "FB_SERIAL=%%i"
@@ -588,6 +592,23 @@ if !errorlevel! equ 0 (
         call :print_green "   [+] Device found in FASTBOOT mode: !FB_SERIAL!"
         call :log_write "[DETECT] Device found in FASTBOOT mode: !FB_SERIAL!"
         goto :device_collect_fastboot
+    )
+)
+
+:: 3. Check for Missing Drivers (if no device found)
+echo.
+call :print_cyan "   [*] Checking for missing USB drivers..."
+set "NEED_DRIVER=0"
+powershell -NoProfile -Command "if (@(Get-WmiObject Win32_PnPEntity | Where-Object { ($_.ConfigManagerErrorCode -ne 0 -or $_.Name -match 'Unknown' -or $_.Name -match 'Android' -or $_.Name -match 'ADB') -and $_.DeviceID -match 'USB' }).Count -gt 0) { exit 1 } else { exit 0 }"
+if !errorlevel! equ 1 set "NEED_DRIVER=1"
+
+if "!NEED_DRIVER!"=="1" (
+    call :print_yellow "   [!] Found connected USB device with missing or generic drivers."
+    choice /c YN /n /m "   Auto-install Official Google USB Drivers now? (Y/N): "
+    if !errorlevel! equ 1 (
+        call :install_usb_drivers
+        :: After install, restart the detection loop to catch the newly detected device
+        goto :detect_any_device
     )
 )
 
@@ -646,6 +667,52 @@ echo.
 call :print_red "   [X] No device detected after 60 seconds."
 call :log_write "[DETECT] Timeout - no device found."
 exit /b 1
+
+
+:: ============================================
+:: SUB: INSTALL USB DRIVERS (AUTO)
+:: ============================================
+:install_usb_drivers
+echo.
+call :print_cyan "   [+] Downloading Official Google USB Drivers..."
+call :log_write "[DRIVER] Downloading Google USB Drivers..."
+set "DRV_ZIP=%TEMP%\usb_driver.zip"
+set "DRV_DIR=%TEMP%\usb_driver_extracted"
+
+:: Download Driver Zip
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$url='%DRIVER_URL%'; $out='%DRV_ZIP%'; " ^
+  "try { Invoke-WebRequest -Uri $url -OutFile $out } catch { exit 1 }"
+if !errorlevel! neq 0 (
+    call :print_red "   [X] Driver download failed. Check internet."
+    call :log_write "[DRIVER] Download failed."
+    exit /b
+)
+
+call :print_cyan "   [+] Extracting drivers..."
+if exist "%DRV_DIR%" rd /s /q "%DRV_DIR%"
+powershell -NoProfile -Command "Expand-Archive -Path '%DRV_ZIP%' -DestinationPath '%DRV_DIR%' -Force"
+
+echo.
+call :print_yellow "   [*] A Windows UAC popup will appear to install the driver."
+call :print_yellow "   [*] Please click 'Yes' to allow the installation."
+timeout /t 2 /nobreak >nul
+
+:: Execute pnputil via PowerShell RunAs to trigger UAC
+powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c pnputil /add-driver \"%DRV_DIR%\usb_driver\android_winusb.inf\" /install' -Verb RunAs -WindowStyle Hidden -Wait"
+
+call :print_green "   [+] Driver installation complete."
+call :log_write "[DRIVER] Installation command finished."
+
+:: Cleanup
+del "%DRV_ZIP%" >nul 2>&1
+rd /s /q "%DRV_DIR%" >nul 2>&1
+
+echo.
+call :print_cyan "   [*] Restarting device scan..."
+timeout /t 2 /nobreak >nul
+exit /b 0
+
 
 :: ---- Collect info via ADB ----
 :device_collect_info

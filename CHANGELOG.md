@@ -1,5 +1,16 @@
 # GBL-AutoRoot — Changelog
 
+## v2.1 — Auto-Driver Install
+
+### ✨ New Features
+- **Auto-Driver Installation (Smart Detect)**
+  - Automatically detects if a connected Android device is missing the correct ADB/Fastboot USB drivers using Windows WMI.
+  - Prompts to auto-download and install the **Official Google USB Drivers** silently.
+  - Native Windows UAC integration (requests permission cleanly without suspicious third-party installers).
+  - Helps users who plug in their phone but see "No device detected" due to missing drivers.
+- **Unauthorized Device Warning**
+  - If ADB sees a device as `unauthorized`, it now prints a helpful yellow warning telling the user to check their phone screen and tap "Allow", instead of treating it as no device.
+
 ## v2.0 — 2026-10-01
 
 ### 🐛 Bug Fixes
