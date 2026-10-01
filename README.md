@@ -12,7 +12,7 @@
 
 **How to use:**
 1. Download `GBL-AutoRoot.bat` from the link above
-2. Double-click to run Ã¢â‚¬â€ no installation needed
+2. Double-click to run - no installation needed
 3. Connect your phone via USB when prompted
 4. Script handles everything: ADB download, device detection, exploit, result
 
@@ -421,4 +421,5 @@ python check.py abl.img
 *Tested on: Poco M7 Plus 5G - HyperOS 2.0.202.0 & 2.0.208.0 - Kernel 6.1.118 & 6.1.138 - September 2026*
 
 *Research by [@aniketlab](https://github.com/aniketlab) - conducted on personal device for educational purposes only.*
+
 
