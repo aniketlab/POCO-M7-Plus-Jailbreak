@@ -21,6 +21,34 @@
 
 ---
 
+## Supported Devices
+
+This tool targets the Qualcomm ABL vulnerability (CVE-2026-24088). If your device has a vulnerable SoC and hasn't received the patched firmware yet, this tool will work.
+
+**🟢 Confirmed Working (Tested)**
+* **POCO M7 Plus 5G** (Snapdragon 695 / SM6375)
+* **Redmi 15 5G** (Snapdragon 695 / SM6375)
+
+**🟡 Potentially Supported (Vulnerable SoCs)**
+*(If these devices have not received the June 2026+ security patches, they are vulnerable and can be rooted using this tool)*
+
+* **Snapdragon 8 Gen 3 (SM8650):** Xiaomi 14, Xiaomi 14 Pro, Xiaomi 14 Ultra, Redmi K70 Pro
+* **Snapdragon 8 Gen 2 (SM8550):** Xiaomi 13, Xiaomi 13 Pro, POCO F5 Pro, Redmi K60 Pro
+* **Snapdragon 8+ Gen 1 (SM8475):** Xiaomi 12T Pro, POCO F5
+* **Snapdragon 888 (SM8350):** Mi 11, Mi 11X Pro, POCO F3
+* **Snapdragon 7+ Gen 3 (SM7675):** POCO F6
+* **Snapdragon 7 Gen 3 (SM7550):** Xiaomi Civi 4
+* **Snapdragon 695 5G (SM6375):** POCO X4 Pro 5G, Redmi Note 11 Pro 5G
+* **Snapdragon 680 (SM6225):** Redmi Note 11, Redmi 10C
+* **Snapdragon 662 (SM6115):** POCO M3, Redmi 9T
+
+**🔴 NOT Supported (Incompatible)**
+* MediaTek (MTK) Devices (e.g., POCO X6 Neo, Redmi Note 13 Pro+)
+* Any device running HyperOS 3.0.304.0 or newer (Security Patch applied)
+
+> **📝 Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
+
+---
 ## Table of Contents
 
 1. [Device & Environment](#1-device--environment)
@@ -421,5 +449,6 @@ python check.py abl.img
 *Tested on: Poco M7 Plus 5G - HyperOS 2.0.202.0 & 2.0.208.0 - Kernel 6.1.118 & 6.1.138 - September 2026*
 
 *Research by [@aniketlab](https://github.com/aniketlab) - conducted on personal device for educational purposes only.*
+
 
 
