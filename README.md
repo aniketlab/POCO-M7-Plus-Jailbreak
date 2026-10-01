@@ -1,10 +1,10 @@
-# POCO M7 Plus (SM6375) - Jailbreak Root Research
+﻿# POCO M7 Plus (SM6375) - Jailbreak Root Research
 
 > **Disclaimer:** This document is written purely for **educational and security research purposes**. All testing was performed on my own device. I am not responsible for bricked devices, data loss, or misuse of this information. The vulnerabilities discussed here are **already publicly disclosed and patched**. Do not attempt this on devices you do not own.
 
 ---
 
-## :arrow_down: Quick Download
+## :arrow_down: Quick Download — v2.0
 
 | File | Description |
 |---|---|
@@ -12,7 +12,7 @@
 
 **How to use:**
 1. Download `GBL-AutoRoot.bat` from the link above
-2. Double-click to run â€” no installation needed
+2. Double-click to run Ã¢â‚¬â€ no installation needed
 3. Connect your phone via USB when prompted
 4. Script handles everything: ADB download, device detection, exploit, result
 
