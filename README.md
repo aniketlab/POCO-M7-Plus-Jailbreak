@@ -1,10 +1,10 @@
-﻿# POCO M7 Plus (SM6375) - Jailbreak Root Research
+# POCO M7 Plus (SM6375) - Jailbreak Root Research
 
 > **Disclaimer:** This document is written purely for **educational and security research purposes**. All testing was performed on my own device. I am not responsible for bricked devices, data loss, or misuse of this information. The vulnerabilities discussed here are **already publicly disclosed and patched**. Do not attempt this on devices you do not own.
 
 ---
 
-## :arrow_down: Quick Download — v2.1
+## :arrow_down: Quick Download - v2.2
 
 | File | Description |
 |---|---|
@@ -27,20 +27,20 @@ This tool targets the Qualcomm ABL vulnerability (CVE-2026-24088). If your devic
 
 | Status | Device / SoC Family | Example Devices |
 |:---:|---|---|
-| 🟢 **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
-| 🟡 **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
-| 🟡 **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
-| 🟡 **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
-| 🟡 **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
-| 🟡 **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
-| 🟡 **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
-| 🟡 **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
-| 🟡 **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
-| 🟡 **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
-| 🔴 **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
-| 🔴 **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
+| ðŸŸ¢ **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
+| ðŸŸ¡ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
+| ðŸŸ¡ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
+| ðŸŸ¡ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
+| ðŸŸ¡ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
+| ðŸŸ¡ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
+| ðŸŸ¡ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
+| ðŸŸ¡ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
+| ðŸŸ¡ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
+| ðŸŸ¡ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
+| ðŸ”´ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
+| ðŸ”´ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
 
-> **📝 Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
+> **ðŸ“ Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
 
 ---
 ## Table of Contents
@@ -423,6 +423,18 @@ python check.py abl.img
 - [XDA Guide - POCO F8 Pro / Redmi K90 (Annibale)](https://xdaforums.com/t/guide-exploit-poco-f8-pro-redmi-k90-annibale-unlock-immediate-bootloader-unlock-no-mi-account.4788141/)
 - [KernelSU Project](https://kernelsu.org/)
 - [ReSukiSU Manager](https://github.com/ReSukiSU/ReSukiSU/releases)
+
+---
+
+## ðŸ”„ Alternative Methods (Untethered / No PC)
+
+If your device is **not vulnerable** to this ABL exploit, or if you **do not have access to a PC**, you may want to check out **[DFRoot by diabl0w](https://github.com/diabl0w/DFRoot)**.
+
+* **What it is:** An on-device APK that grants temporary root without needing a PC.
+* **How it works:** It exploits a kernel vulnerability (**CVE-2026-43284 / DirtyFrag**) to load a custom kernel module.
+* **Best for:** Samsung devices with locked bootloaders or users who want to regain root directly from their phone after a reboot.
+
+> **Note:** Kernel exploits like DFRoot and GhostLock can cause kernel panics (random reboots) if your specific firmware is not perfectly supported. Bootloader exploits (like our `GBL-AutoRoot`) are generally safer and won't crash the OS, but require a PC. Choose the tool that best fits your situation!
 
 ### Credits
 
