@@ -4,7 +4,7 @@
 
 ---
 
-## :arrow_down: Quick Download - v2.3
+## :arrow_down: Quick Download - v2.4
 
 | File | Description |
 |---|---|
@@ -27,20 +27,20 @@ This tool targets the Qualcomm ABL vulnerability (CVE-2026-24088). If your devic
 
 | Status | Device / SoC Family | Example Devices |
 |:---:|---|---|
-| Ã°Å¸Å¸Â¢ **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
-| Ã°Å¸Å¸Â¡ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
-| Ã°Å¸â€Â´ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
-| Ã°Å¸â€Â´ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¢ **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
+| ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
+| ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
+| ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
 
-> **Ã°Å¸â€œÂ Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
+> **ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
 
 ---
 ## Table of Contents
@@ -426,7 +426,7 @@ python check.py abl.img
 
 ---
 
-## Ã°Å¸â€â€ž Alternative Methods (Untethered / No PC)
+## ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Alternative Methods (Untethered / No PC)
 
 If your device is **not vulnerable** to this ABL exploit, or if you **do not have access to a PC**, you may want to check out **[DFRoot by diabl0w](https://github.com/diabl0w/DFRoot)**.
 
