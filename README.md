@@ -1,4 +1,4 @@
-# POCO M7 Plus (SM6375) - Jailbreak Root Research
+﻿# POCO M7 Plus (SM6375) - Jailbreak Root Research
 
 > **Disclaimer:** This document is written purely for **educational and security research purposes**. All testing was performed on my own device. I am not responsible for bricked devices, data loss, or misuse of this information. The vulnerabilities discussed here are **already publicly disclosed and patched**. Do not attempt this on devices you do not own.
 
@@ -27,20 +27,20 @@ This tool targets the Qualcomm ABL vulnerability (CVE-2026-24088). If your devic
 
 | Status | Device / SoC Family | Example Devices |
 |:---:|---|---|
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
-| ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
+| âœ… **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
+| âš ï¸ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
+| âš ï¸ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
+| âš ï¸ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
+| âš ï¸ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
+| âš ï¸ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
+| âš ï¸ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
+| âš ï¸ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
+| âš ï¸ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
+| âš ï¸ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
+| âŒ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
+| âŒ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
 
-> **ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
+> **ðŸ“¢ Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
 
 ---
 ## Table of Contents
@@ -426,7 +426,7 @@ python check.py abl.img
 
 ---
 
-## ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ Alternative Methods (Untethered / No PC)
+## 🔧 Alternative Methods (Untethered / No PC)
 
 If your device is **not vulnerable** to this ABL exploit, or if you **do not have access to a PC**, you may want to check out **[DFRoot by diabl0w](https://github.com/diabl0w/DFRoot)**.
 
