@@ -27,21 +27,20 @@ This tool targets the Qualcomm ABL vulnerability (CVE-2026-24088). If your devic
 
 | Status | Device / SoC Family | Example Devices |
 |:---:|---|---|
-| âœ… **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
-| âš ï¸ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
-| âš ï¸ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
-| âš ï¸ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
-| âš ï¸ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
-| âš ï¸ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
-| âš ï¸ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
-| âš ï¸ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
-| âš ï¸ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
-| âš ï¸ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
-| âŒ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
-| âŒ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
+| ✅ **Confirmed** | **Snapdragon 695** (SM6375) | POCO M7 Plus 5G, Redmi 15 5G |
+| ⚠️ **Potential** | **Snapdragon 8 Gen 3** (SM8650) | Xiaomi 14 / Pro / Ultra, Redmi K70 Pro |
+| ⚠️ **Potential** | **Snapdragon 8 Gen 2** (SM8550) | Xiaomi 13 / Pro, POCO F5 Pro, Redmi K60 Pro |
+| ⚠️ **Potential** | **Snapdragon 8+ Gen 1** (SM8475) | Xiaomi 12T Pro, POCO F5 |
+| ⚠️ **Potential** | **Snapdragon 888** (SM8350) | Mi 11, Mi 11X Pro, POCO F3 |
+| ⚠️ **Potential** | **Snapdragon 7+ Gen 3** (SM7675) | POCO F6 |
+| ⚠️ **Potential** | **Snapdragon 7 Gen 3** (SM7550) | Xiaomi Civi 4 |
+| ⚠️ **Potential** | **Snapdragon 695 5G** (SM6375) | POCO X4 Pro 5G, Redmi Note 11 Pro 5G |
+| ⚠️ **Potential** | **Snapdragon 680** (SM6225) | Redmi Note 11, Redmi 10C |
+| ⚠️ **Potential** | **Snapdragon 662** (SM6115) | POCO M3, Redmi 9T |
+| ❌ **No Support**| **MediaTek (MTK)** | POCO X6 Neo, Redmi Note 13 Pro+ |
+| ❌ **No Support**| **Patched Firmware** | HyperOS 3.0.304.0+ (Security Patch applied) |
 
-> **ðŸ“¢ Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
-
+> **📢 Community Testing Required:** I do not have all these devices available for testing. If you have one of the "Potentially Supported" devices, please test the tool and let me know the results. This will help me confirm and officially add your device to the "Confirmed Working" list!
 ---
 ## Table of Contents
 
